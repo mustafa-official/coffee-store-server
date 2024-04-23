@@ -86,7 +86,6 @@ async function run() {
 
     //user related apis
 
-
     //read multiple user
     app.get('/user', async (req, res) => {
       const cursor = userCollection.find();
