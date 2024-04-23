@@ -27,6 +27,7 @@ async function run() {
     await client.connect()
     //create connection with mongodb
     const coffeeCollection = client.db('coffeeDB').collection('coffee');
+    const userCollection = client.db('coffeeDB').collection('user');
 
     //read coffee multiple items
     app.get('/coffee', async (req, res) => {
@@ -80,6 +81,47 @@ async function run() {
       console.log(newCoffee);
       const result = await coffeeCollection.insertOne(newCoffee)
       res.send(result)
+    })
+
+
+    //user related apis
+
+
+    //read multiple user
+    app.get('/user', async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+
+    //delete user
+    app.delete('/user/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result)
+
+    })
+
+    //update user with patch
+    app.patch('/user', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const updateUser = {
+        $set: {
+          lastSignInTime: user.lastSignInTime
+        }
+      }
+      const result = await userCollection.updateOne(filter, updateUser);
+      res.send(result);
+    })
+
+    //create user
+    app.post('/user', async (req, res) => {
+      const newUser = req.body;
+      console.log(newUser);
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
     })
 
 
